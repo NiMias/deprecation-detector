@@ -23,11 +23,11 @@ class ComposedViolationChecker implements ViolationCheckerInterface
     /**
      * {@inheritdoc}
      */
-    public function check(PhpFileInfo $phpFileInfo, RuleSet $ruleSet)
+    public function check(PhpFileInfo $phpFileInfo, RuleSet $ruleSet, RuleSet $usedRuleSet)
     {
-        $violations = array_map(function (ViolationCheckerInterface $checker) use ($phpFileInfo, $ruleSet) {
+        $violations = array_map(function (ViolationCheckerInterface $checker) use ($phpFileInfo, $ruleSet, $usedRuleSet) {
             try {
-                return $checker->check($phpFileInfo, $ruleSet);
+                return $checker->check($phpFileInfo, $ruleSet, $usedRuleSet);
             } catch (\Exception $e) {
                 # TODO.
                 return array();

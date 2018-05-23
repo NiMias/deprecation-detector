@@ -13,5 +13,5 @@ interface ViolationCheckerInterface
      *
      * @return \SensioLabs\DeprecationDetector\Violation\Violation[]
      */
-    public function check(PhpFileInfo $phpFileInfo, RuleSet $ruleSet);
+    public function check(PhpFileInfo $phpFileInfo, RuleSet $ruleSet, RuleSet $usedRuleSet);
 }

@@ -92,4 +92,14 @@ class DefaultProgressOutput
     {
         $this->output->writeln('Finished rendering output.'.PHP_EOL);
     }
+
+    public function echoInfoAboutCheckedFile($fileName)
+    {
+        $this->output->writeln(
+            sprintf(
+                '<comment>Checked %s</comment>',
+                $fileName
+            )
+        );
+    }
 }

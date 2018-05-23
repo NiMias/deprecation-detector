@@ -2,6 +2,7 @@
 
 namespace SensioLabs\DeprecationDetector\Violation;
 
+use SensioLabs\DeprecationDetector\Console\Output\DefaultProgressOutput;
 use SensioLabs\DeprecationDetector\FileInfo\PhpFileInfo;
 use SensioLabs\DeprecationDetector\RuleSet\RuleSet;
 use SensioLabs\DeprecationDetector\Violation\Violation as BaseViolation;
@@ -21,15 +22,22 @@ class ViolationDetector
     private $violationFilter;
 
     /**
+     * @var DefaultProgressOutput
+     */
+    private $output;
+
+    /**
      * @param ViolationCheckerInterface $violationChecker
      * @param ViolationFilterInterface  $violationFilter
      */
     public function __construct(
         ViolationCheckerInterface $violationChecker,
-        ViolationFilterInterface $violationFilter
+        ViolationFilterInterface $violationFilter,
+        DefaultProgressOutput $output
     ) {
         $this->violationChecker = $violationChecker;
         $this->violationFilter = $violationFilter;
+        $this->output = $output;
     }
 
     /**
@@ -38,12 +46,16 @@ class ViolationDetector
      *
      * @return BaseViolation[]
      */
-    public function getViolations(RuleSet $ruleSet, array $files)
+    public function getViolations(RuleSet $ruleSet, array $files, RuleSet $usedRuleSet)
     {
         $result = array();
-        foreach ($files as $i => $file) {
-            $unfilteredResult = $this->violationChecker->check($file, $ruleSet);
+
+        for ($i=0;isset($files[$i]);$i++) {
+            $this->output->echoInfoAboutCheckedFile($i . ": " . $files[$i]->getRelativePathname());
+            $unfilteredResult = $this->violationChecker->check($files[$i], $ruleSet, $usedRuleSet);
+
             foreach ($unfilteredResult as $unfilteredViolation) {
+
                 if (false === $this->violationFilter->isViolationFiltered($unfilteredViolation)) {
                     $result[] = $unfilteredViolation;
                 }

@@ -84,6 +84,10 @@ class FindDeprecatedTagsVisitor extends NodeVisitorAbstract implements Deprecati
 
             return;
         }
+
+        // Add traits
+        // Add constants
+        // Add properties
     }
 
     /**

@@ -13,7 +13,7 @@ class TypeHintViolationChecker implements ViolationCheckerInterface
     /**
      * {@inheritdoc}
      */
-    public function check(PhpFileInfo $phpFileInfo, RuleSet $ruleSet)
+    public function check(PhpFileInfo $phpFileInfo, RuleSet $ruleSet, RuleSet $usedRuleSet)
     {
         $violations = array();
 
@@ -29,11 +29,20 @@ class TypeHintViolationChecker implements ViolationCheckerInterface
                     $ruleSet->getClass($typeHintUsage->name())->comment() :
                     $ruleSet->getInterface($typeHintUsage->name())->comment();
 
-                $violations[] = new Violation(
+                $violation = new Violation(
                     $usage,
                     $phpFileInfo,
                     $comment
                 );
+                $violations[] = $violation;
+
+                if ($isClass) {
+                    $usedRuleSet->merge(new RuleSet([$typeHintUsage->name() => $ruleSet->getClass($typeHintUsage->name())]));
+                    $usedRuleSet->addClassDeprecationsViolation($typeHintUsage->name(), $violation);
+                } else {
+                    $usedRuleSet->merge(new RuleSet([], [$typeHintUsage->name() => $ruleSet->getClass($typeHintUsage->name())]));
+                    $usedRuleSet->addInterfaceDeprecationsViolation($typeHintUsage->name(), $violation);
+                }
             }
         }
 

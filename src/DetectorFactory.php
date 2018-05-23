@@ -124,13 +124,13 @@ class DetectorFactory
         );
         $deprecationDirectoryTraverser = new DirectoryTraverser($ruleSetDeprecationFinder);
 
-        $violationDetector = $this->getViolationDetector($configuration);
-
         $renderer = $this->getRenderer($configuration, $output);
 
         $ruleSetLoader = $this->getRuleSetLoader($deprecationDirectoryTraverser, $configuration);
 
         $progressOutput = new DefaultProgressOutput($output, new Stopwatch());
+
+        $violationDetector = $this->getViolationDetector($configuration, $progressOutput);
 
         return new DeprecationDetector(
             $this->getPredefinedRuleSet(),
@@ -237,14 +237,15 @@ class DetectorFactory
      *
      * @return ViolationDetector
      */
-    private function getViolationDetector(Configuration $configuration)
+    private function getViolationDetector(Configuration $configuration, DefaultProgressOutput $output)
     {
         $violationChecker = $this->getViolationChecker($configuration);
         $violationFilter = $this->getViolationFilter($configuration);
 
         return new ViolationDetector(
             $violationChecker,
-            $violationFilter
+            $violationFilter,
+            $output
         );
     }
 

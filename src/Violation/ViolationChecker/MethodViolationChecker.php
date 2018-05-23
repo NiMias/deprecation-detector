@@ -26,7 +26,7 @@ class MethodViolationChecker implements ViolationCheckerInterface
     /**
      * {@inheritdoc}
      */
-    public function check(PhpFileInfo $phpFileInfo, RuleSet $ruleSet)
+    public function check(PhpFileInfo $phpFileInfo, RuleSet $ruleSet, RuleSet $usedRuleSet)
     {
         $violations = array();
 
@@ -34,18 +34,22 @@ class MethodViolationChecker implements ViolationCheckerInterface
             $className = $methodUsage->className();
 
             if ($ruleSet->hasMethod($methodUsage->name(), $className)) {
-                $violations[] = new Violation(
+                $violation = new Violation(
                     $methodUsage,
                     $phpFileInfo,
                     $ruleSet->getMethod($methodUsage->name(), $className)->comment()
                 );
+                $violations[] = $violation;
+
+                $usedRuleSet->merge(new RuleSet([], [], [$className => [$methodUsage->name() => $ruleSet->getMethod($methodUsage->name(), $className)]], []));
+                $usedRuleSet->addMethodDeprecationsViolation($methodUsage->name(), $className, $violation);
             }
 
             $ancestors = $this->ancestorResolver->getClassAncestors($phpFileInfo, $methodUsage->className());
 
             foreach ($ancestors as $ancestor) {
                 if ($ruleSet->hasMethod($methodUsage->name(), $ancestor)) {
-                    $violations[] = new Violation(
+                    $violation = new Violation(
                         new MethodUsage(
                             $methodUsage->name(),
                             $ancestor,
@@ -55,6 +59,10 @@ class MethodViolationChecker implements ViolationCheckerInterface
                         $phpFileInfo,
                         $ruleSet->getMethod($methodUsage->name(), $ancestor)->comment()
                     );
+                    $violations[] = $violation;
+
+                    $usedRuleSet->merge(new RuleSet([], [], [$ancestor => [$methodUsage->name() => $ruleSet->getMethod($methodUsage->name(), $ancestor)]], []));
+                    $usedRuleSet->addMethodDeprecationsViolation($methodUsage->name(), $ancestor, $violation);
                 }
             }
         }

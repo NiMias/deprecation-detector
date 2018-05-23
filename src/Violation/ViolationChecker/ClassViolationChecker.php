@@ -11,17 +11,21 @@ class ClassViolationChecker implements ViolationCheckerInterface
     /**
      * {@inheritdoc}
      */
-    public function check(PhpFileInfo $phpFileInfo, RuleSet $ruleSet)
+    public function check(PhpFileInfo $phpFileInfo, RuleSet $ruleSet, RuleSet $usedRuleSet)
     {
         $violations = array();
 
         foreach ($phpFileInfo->classUsages() as $classUsage) {
             if ($ruleSet->hasClass($classUsage->name())) {
-                $violations[] = new Violation(
+                $violation = new Violation(
                     $classUsage,
                     $phpFileInfo,
                     $ruleSet->getClass($classUsage->name())->comment()
                 );
+                $violations[] = $violation;
+
+                $usedRuleSet->merge(new RuleSet([$classUsage->name() => $ruleSet->getClass($classUsage->name())]));
+                $usedRuleSet->addClassDeprecationsViolation($classUsage->name(), $violation);
             }
         }
 

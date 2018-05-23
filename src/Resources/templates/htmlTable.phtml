@@ -181,6 +181,244 @@
         </div>
     </div>
 
+    <div class="summary summary-success">
+        <div class="container-fluid">
+            <div class="metrics">
+                <div class="metric">
+                    <span class="value"><?php echo count($commonRuleSet->classDeprecations()) ?></span>
+                    <span class="label">Total <br> deprecated <br> classes</span>
+                </div>
+
+                <div class="metric">
+                    <span class="value"><?php echo count($commonRuleSet->functionDeprecations()) ?></span>
+                    <span class="label">Total <br> deprecated <br> functions</span>
+                </div>
+
+                <div class="metric">
+                    <span class="value"><?php echo count($commonRuleSet->methodDeprecations()) ?></span>
+                    <span class="label">Total <br> deprecated <br> methods</span>
+                </div>
+
+                <div class="metric">
+                    <span class="value"><?php echo count($commonRuleSet->interfaceDeprecations()) ?></span>
+                    <span class="label">Total <br> deprecated <br> interfaces</span>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="summary summary-success">
+        <div class="container-fluid">
+            <div class="metrics">
+                <div class="metric">
+                    <span class="value"><?php echo count($notUsedRuleSet->classDeprecations()) ?></span>
+                    <span class="label">Unused <br> deprecated <br> classes</span>
+                </div>
+
+                <div class="metric">
+                    <span class="value"><?php echo count($notUsedRuleSet->functionDeprecations()) ?></span>
+                    <span class="label">Unused <br> deprecated <br> functions</span>
+                </div>
+
+                <div class="metric">
+                    <span class="value"><?php echo count($notUsedRuleSet->methodDeprecations()) ?></span>
+                    <span class="label">Unused <br> deprecated <br> methods</span>
+                </div>
+
+                <div class="metric">
+                    <span class="value"><?php echo count($notUsedRuleSet->interfaceDeprecations()) ?></span>
+                    <span class="label">Unused <br> deprecated <br> interfaces</span>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <?php $index = 1; ?>
+        <h2>Unused deprecation details</h2>
+        <table>
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Usage</th>
+                <th>Line</th>
+                <th>Comment</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr class="file info">
+                <td colspan="4" class="filename">Classes</td>
+            </tr>
+            <?php foreach ($notUsedRuleSet->classDeprecations() as $classDeprecation): ?>
+                <tr class="violation">
+                    <td class="index"><?php echo $index++; ?></td>
+                    <td class="usage"><?php echo $classDeprecation->name(); ?></td>
+                    <td class="line"></td>
+                    <td class="comment"><?php echo $classDeprecation->comment(); ?></td>
+                </tr>
+            <?php endforeach; ?>
+            <tr class="file info">
+                <td colspan="4" class="filename">Functions</td>
+            </tr>
+            <?php foreach ($notUsedRuleSet->functionDeprecations() as $classDeprecation): ?>
+                <tr class="violation">
+                    <td class="index"><?php echo $index++; ?></td>
+                    <td class="usage"><?php echo $classDeprecation->name(); ?></td>
+                    <td class="line"></td>
+                    <td class="comment"><?php echo $classDeprecation->comment(); ?></td>
+                </tr>
+            <?php endforeach; ?>
+            <tr class="file info">
+                <td colspan="4" class="filename">Methods</td>
+            </tr>
+            <?php foreach ($notUsedRuleSet->methodDeprecations() as $className => $classDeprecations): ?>
+                <tr class="file info">
+                    <td colspan="4" class="filename"><?php echo $className; ?></td>
+                </tr>
+                <?php foreach ($classDeprecations as $methodName => $classDeprecation): ?>
+                <tr class="violation">
+                    <td class="index"><?php echo $index++; ?></td>
+                    <td class="usage"><?php echo $classDeprecation->parentName(); ?> : <?php echo $classDeprecation->name(); ?></td>
+                    <td class="line"></td>
+                    <td class="comment"><?php echo $classDeprecation->comment(); ?></td>
+                </tr>
+                <?php endforeach; ?>
+            <?php endforeach; ?>
+            <tr class="file info">
+                <td colspan="4" class="filename">Interfaces</td>
+            </tr>
+            <?php foreach ($notUsedRuleSet->interfaceDeprecations() as $classDeprecation): ?>
+                <tr class="violation">
+                    <td class="index"><?php echo $index++; ?></td>
+                    <td class="usage"><?php echo $classDeprecation->name(); ?></td>
+                    <td class="line"></td>
+                    <td class="comment"><?php echo $classDeprecation->comment(); ?></td>
+                </tr>
+            <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="summary summary-success">
+        <div class="container-fluid">
+            <div class="metrics">
+                <div class="metric">
+                    <span class="value"><?php echo count($usedRuleSet->classDeprecations()) ?></span>
+                    <span class="label">Used <br> deprecated <br> classes</span>
+                </div>
+
+                <div class="metric">
+                    <span class="value"><?php echo count($usedRuleSet->functionDeprecations()) ?></span>
+                    <span class="label">Used <br> deprecated <br> functions</span>
+                </div>
+
+                <div class="metric">
+                    <span class="value"><?php echo count($usedRuleSet->methodDeprecations()) ?></span>
+                    <span class="label">Used <br> deprecated <br> methods</span>
+                </div>
+
+                <div class="metric">
+                    <span class="value"><?php echo count($usedRuleSet->interfaceDeprecations()) ?></span>
+                    <span class="label">Used <br> deprecated <br> interfaces</span>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <?php $index = 1; ?>
+        <h2>Used deprecation details</h2>
+        <table>
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>File</th>
+                <th>Line</th>
+                <th>Usage</th>
+                <th>Comment</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr class="file info">
+                <td colspan="5" class="filename"><h3>Classes</h3></td>
+            </tr>
+            <?php foreach ($usedRuleSet->getClassDeprecationsViolations() as $className => $classViolations): ?>
+                <tr class="file info">
+                    <td></td><td colspan="4" class="filename">Class: <?php echo $className; ?></td>
+                </tr>
+                <?php foreach ($classViolations as $violation): ?>
+                    <tr class="violation">
+                        <td class="index"><?php echo $index++; ?></td>
+                        <td><?php echo $violation->getFile()->getPathname(); ?></td>
+                        <td class="line"><?php echo $violation->getLine(); ?></td>
+                        <td class="usage"><?php echo strip_tags($this->messageHelper->getViolationMessage($violation)); ?></td>
+                        <td class="comment"><?php echo $violation->getComment(); ?></td>
+                    </tr>
+                <?php endforeach; ?>
+            <?php endforeach; ?>
+            <tr class="file info">
+                <td colspan="5" class="filename"><h3>Functions</h3></td>
+            </tr>
+            <?php foreach ($usedRuleSet->getFunctionDeprecationsViolations() as $className => $classViolations): ?>
+                <tr class="file info">
+                    <td></td><td colspan="4" class="filename">Function: <?php echo $className; ?></td>
+                </tr>
+                <?php foreach ($classViolations as $violation): ?>
+                    <tr class="violation">
+                        <td class="index"><?php echo $index++; ?></td>
+                        <td><?php echo $violation->getFile()->getPathname(); ?></td>
+                        <td class="line"><?php echo $violation->getLine(); ?></td>
+                        <td class="usage"><?php echo strip_tags($this->messageHelper->getViolationMessage($violation)); ?></td>
+                        <td class="comment"><?php echo $violation->getComment(); ?></td>
+                    </tr>
+                <?php endforeach; ?>
+            <?php endforeach; ?>
+            <tr class="file info">
+                <td colspan="5" class="filename"><h3>Methods</h3></td>
+            </tr>
+            <?php foreach ($usedRuleSet->getMethodDeprecationsViolations() as $className => $methods): ?>
+                <tr class="file info">
+                    <td></td><td colspan="4" class="filename">Class: <?php echo $className; ?></td>
+                </tr>
+                <?php foreach ($methods as $methodName => $methodViolations): ?>
+                    <tr class="file info">
+                        <td></td><td colspan="4" class="filename"><i>Method: <?php echo $methodName; ?></i></td>
+                    </tr>
+                    <?php foreach ($methodViolations as $violation): ?>
+                        <tr class="violation">
+                            <td class="index"><?php echo $index++; ?></td>
+                            <td><?php echo $violation->getFile()->getPathname(); ?></td>
+                            <td class="line"><?php echo $violation->getLine(); ?></td>
+                            <td class="usage"><?php echo strip_tags($this->messageHelper->getViolationMessage($violation)); ?></td>
+                            <td class="comment"><?php echo $violation->getComment(); ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php endforeach; ?>
+            <?php endforeach; ?>
+            <tr class="file info">
+                <td colspan="5" class="filename"><h3>Interfaces</h3></td>
+            </tr>
+            <?php foreach ($usedRuleSet->getInterfaceDeprecationsViolations() as $className => $classViolations): ?>
+                <tr class="file info">
+                    <td></td><td colspan="4" class="filename">Interface: <?php echo $className; ?></td>
+                </tr>
+                <?php foreach ($classViolations as $violation): ?>
+                    <tr class="violation">
+                        <td class="index"><?php echo $index++; ?></td>
+                        <td><?php echo $violation->getFile()->getPathname(); ?></td>
+                        <td class="line"><?php echo $violation->getLine(); ?></td>
+                        <td class="usage"><?php echo strip_tags($this->messageHelper->getViolationMessage($violation)); ?></td>
+                        <td class="comment"><?php echo $violation->getComment(); ?></td>
+                    </tr>
+                <?php endforeach; ?>
+            <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+
     <div class="summary <?php echo count($violations) == 0 ? 'summary-success' : 'summary-error' ?>">
         <div class="container-fluid">
             <div class="metrics">
@@ -191,7 +429,7 @@
 
                 <div class="metric">
                     <span class="value"><?php echo count($orderedViolations) ?></span>
-                    <span class="label">Analyzed <br> files</span>
+                    <span class="label">Files with <br> deprications</span>
                 </div>
 
                 <div class="metric">

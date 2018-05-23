@@ -3,6 +3,7 @@
 namespace SensioLabs\DeprecationDetector\Violation\Renderer\Html;
 
 use PhpParser\Error;
+use SensioLabs\DeprecationDetector\RuleSet\RuleSet;
 use SensioLabs\DeprecationDetector\Violation\Renderer\MessageHelper\MessageHelper;
 use SensioLabs\DeprecationDetector\Violation\Renderer\RendererInterface;
 use SensioLabs\DeprecationDetector\Violation\Violation;
@@ -50,7 +51,7 @@ class Renderer implements RendererInterface
      * @param Violation[] $violations
      * @param Error[]     $errors
      */
-    public function renderViolations(array $violations, array $errors)
+    public function renderViolations(array $violations, array $errors, RuleSet $commonRuleSet, RuleSet $usedRuleSet, RuleSet $notUsedRuleSet)
     {
         $orderedViolations = array();
         // sorting and grouping violations

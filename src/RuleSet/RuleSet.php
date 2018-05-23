@@ -7,6 +7,7 @@ use SensioLabs\DeprecationDetector\FileInfo\Deprecation\FunctionDeprecation;
 use SensioLabs\DeprecationDetector\FileInfo\Deprecation\InterfaceDeprecation;
 use SensioLabs\DeprecationDetector\FileInfo\Deprecation\MethodDeprecation;
 use SensioLabs\DeprecationDetector\FileInfo\DeprecationCollectionInterface;
+use SensioLabs\DeprecationDetector\Violation\Violation;
 
 class RuleSet implements DeprecationCollectionInterface
 {
@@ -29,6 +30,26 @@ class RuleSet implements DeprecationCollectionInterface
      * @var array
      */
     private $functionDeprecations;
+
+    /**
+     * @var array
+     */
+    private $classDeprecationsViolations = [];
+
+    /**
+     * @var array
+     */
+    private $interfaceDeprecationsViolations = [];
+
+    /**
+     * @var array
+     */
+    private $methodDeprecationsViolations = [];
+
+    /**
+     * @var array
+     */
+    private $functionDeprecationsViolations = [];
 
     /**
      * @param array $classDeprecations
@@ -66,6 +87,29 @@ class RuleSet implements DeprecationCollectionInterface
             $collection->methodDeprecations()
         );
         $this->functionDeprecations = array_merge(
+            $this->functionDeprecations,
+            $collection->functionDeprecations()
+        );
+    }
+
+    /**
+     * @param DeprecationCollectionInterface $collection
+     */
+    public function merge_recursive(DeprecationCollectionInterface $collection)
+    {
+        $this->classDeprecations = array_merge_recursive(
+            $this->classDeprecations(),
+            $collection->classDeprecations()
+        );
+        $this->interfaceDeprecations = array_merge_recursive(
+            $this->interfaceDeprecations(),
+            $collection->interfaceDeprecations()
+        );
+        $this->methodDeprecations = array_merge_recursive(
+            $this->methodDeprecations(),
+            $collection->methodDeprecations()
+        );
+        $this->functionDeprecations = array_merge_recursive(
             $this->functionDeprecations,
             $collection->functionDeprecations()
         );
@@ -199,5 +243,66 @@ class RuleSet implements DeprecationCollectionInterface
         }
 
         return $this->functionDeprecations[$function];
+    }
+
+    /**
+     * @return array
+     */
+    public function getClassDeprecationsViolations()
+    {
+        return $this->classDeprecationsViolations;
+    }
+
+    /**
+     * @return array
+     */
+    public function getFunctionDeprecationsViolations()
+    {
+        return $this->functionDeprecationsViolations;
+    }
+
+    /**
+     * @return array
+     */
+    public function getInterfaceDeprecationsViolations()
+    {
+        return $this->interfaceDeprecationsViolations;
+    }
+
+    /**
+     * @return array
+     */
+    public function getMethodDeprecationsViolations()
+    {
+        return $this->methodDeprecationsViolations;
+    }
+
+    /**
+     * @param array $classDeprecationsViolations
+     */
+    public function addClassDeprecationsViolation($class, Violation $violation)
+    {
+        $this->classDeprecationsViolations[$class][] = $violation;
+    }
+
+    /**
+     * @param array $functionDeprecationsViolations
+     */
+    public function addFunctionDeprecationsViolation($function, Violation $violation)
+    {
+        $this->functionDeprecationsViolations[$function][] = $violation;
+    }
+
+    /**
+     * @param array $interfaceDeprecationsViolations
+     */
+    public function addInterfaceDeprecationsViolation($interface, Violation $violation)
+    {
+        $this->interfaceDeprecationsViolations[$interface][] = $violation;
+    }
+
+    public function addMethodDeprecationsViolation($method, $class, Violation $violation)
+    {
+        $this->methodDeprecationsViolations[$class][$method][] = $violation;
     }
 }

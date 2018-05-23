@@ -12,8 +12,9 @@ class UsageFinderFactory implements FinderFactoryInterface
         $finder
             ->name('*.php')
             ->exclude('vendor')
-            ->exclude('Tests')
-            ->exclude('Test');
+//            ->exclude('Tests')
+//            ->exclude('Test');
+        ;
 
         return $finder;
     }

@@ -11,7 +11,7 @@ class LanguageViolationChecker implements ViolationCheckerInterface
     /**
      * {@inheritdoc}
      */
-    public function check(PhpFileInfo $phpFileInfo, RuleSet $ruleSet)
+    public function check(PhpFileInfo $phpFileInfo, RuleSet $ruleSet, RuleSet $usedRuleSet)
     {
         $violations = array();
 

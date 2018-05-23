@@ -25,7 +25,7 @@ class MethodDefinitionViolationChecker implements ViolationCheckerInterface
     /**
      * {@inheritdoc}
      */
-    public function check(PhpFileInfo $phpFileInfo, RuleSet $ruleSet)
+    public function check(PhpFileInfo $phpFileInfo, RuleSet $ruleSet, RuleSet $usedRuleSet)
     {
         $violations = array();
 
@@ -34,11 +34,15 @@ class MethodDefinitionViolationChecker implements ViolationCheckerInterface
 
             foreach ($ancestors as $ancestor) {
                 if ($ruleSet->hasMethod($methodDefinition->name(), $ancestor)) {
-                    $violations[] = new Violation(
+                    $violation = new Violation(
                         $methodDefinition,
                         $phpFileInfo,
                         $ruleSet->getMethod($methodDefinition->name(), $ancestor)->comment()
                     );
+                    $violations[] = $violation;
+
+                    $usedRuleSet->merge(new RuleSet([], [], [$ancestor => [$methodDefinition->name() => $ruleSet->getMethod($methodDefinition->name(), $ancestor)]], []));
+                    $usedRuleSet->addMethodDeprecationsViolation($methodDefinition->name(), $ancestor, $violation);
                 }
             }
         }

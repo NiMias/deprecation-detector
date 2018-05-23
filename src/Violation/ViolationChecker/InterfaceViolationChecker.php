@@ -11,18 +11,22 @@ class InterfaceViolationChecker implements ViolationCheckerInterface
     /**
      * {@inheritdoc}
      */
-    public function check(PhpFileInfo $phpFileInfo, RuleSet $ruleSet)
+    public function check(PhpFileInfo $phpFileInfo, RuleSet $ruleSet, RuleSet $usedRuleSet)
     {
         $violations = array();
 
         foreach ($phpFileInfo->interfaceUsages() as $interfaceUsageGroup) {
             foreach ($interfaceUsageGroup as $interfaceUsage) {
                 if ($ruleSet->hasInterface($interfaceUsage->name())) {
-                    $violations[] = new Violation(
+                    $violation = new Violation(
                         $interfaceUsage,
                         $phpFileInfo,
                         $ruleSet->getInterface($interfaceUsage->name())->comment()
                     );
+                    $violations[] = $violation;
+
+                    $usedRuleSet->merge(new RuleSet([], [$interfaceUsage->name() => $ruleSet->getInterface($interfaceUsage->name())], [], []));
+                    $usedRuleSet->addInterfaceDeprecationsViolation($interfaceUsage->name(), $violation);
                 }
             }
         }

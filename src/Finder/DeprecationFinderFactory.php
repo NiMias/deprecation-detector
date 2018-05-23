@@ -13,8 +13,9 @@ class DeprecationFinderFactory implements FinderFactoryInterface
             ->name('*.php')
             ->contains('@deprecated')
             ->exclude('vendor')
-            ->exclude('Tests')
-            ->exclude('Test');
+//            ->exclude('Tests')
+//            ->exclude('Test');
+        ;
 
         return $finder;
     }

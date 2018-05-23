@@ -3,6 +3,7 @@
 namespace SensioLabs\DeprecationDetector;
 
 use SensioLabs\DeprecationDetector\Console\Output\DefaultProgressOutput;
+use SensioLabs\DeprecationDetector\FileInfo\Usage\MethodUsage;
 use SensioLabs\DeprecationDetector\Finder\ParsedPhpFileFinder;
 use SensioLabs\DeprecationDetector\RuleSet\Loader\LoaderInterface;
 use SensioLabs\DeprecationDetector\RuleSet\RuleSet;
@@ -84,7 +85,7 @@ class DeprecationDetector
 
         $this->output->startRuleSetGeneration();
         $ruleSet = $this->ruleSetLoader->loadRuleSet($ruleSetArg);
-        $ruleSet->merge($this->preDefinedRuleSet);
+//        $ruleSet->merge($this->preDefinedRuleSet);
         $this->output->endRuleSetGeneration();
 
         $this->output->startUsageDetection();
@@ -96,16 +97,42 @@ class DeprecationDetector
             $lib,
         ));
 
+        $usedRuleSet = new RuleSet();
+
         $result = $this->deprecationFinder->parsePhpFiles($sourceArg);
-        $violations = $this->violationDetector->getViolations($ruleSet, $result->parsedFiles());
+        $violations = $this->violationDetector->getViolations($ruleSet, $result->parsedFiles(), $usedRuleSet);
         $this->output->endUsageDetection();
 
+        $notUsedRuleSet = $this->getNotUsedRuleSet($ruleSet, $usedRuleSet);
+
         $this->output->startOutputRendering();
-        $this->renderer->renderViolations($violations, $result->parserErrors());
+        $this->renderer->renderViolations($violations, $result->parserErrors(), $ruleSet, $usedRuleSet, $notUsedRuleSet);
         $this->output->endOutputRendering();
 
         $this->output->endProgress($result->fileCount(), count($violations));
 
         return $violations;
+    }
+
+    public function getNotUsedRuleSet(RuleSet $ruleSet, RuleSet $usedRuleSet)
+    {
+        $notUsedClasses = $notUsedMethods = $notUsedFunctions = $notUsedInterfaces = [];
+
+        $notUsedClasses = array_diff_key($ruleSet->classDeprecations(), $usedRuleSet->classDeprecations());
+        $notUsedFunctions = array_diff_key($ruleSet->functionDeprecations(), $usedRuleSet->functionDeprecations());
+
+        foreach ($ruleSet->methodDeprecations() as $className => $methodDeprecation) {
+
+            foreach ($methodDeprecation as $methodName => $method) {
+
+                if (!$usedRuleSet->hasMethod($methodName, $className)) {
+                    $notUsedMethods[$className][$methodName] = $method;
+                }
+            }
+        }
+
+        $notUsedInterfaces = array_diff_key($ruleSet->interfaceDeprecations(), $usedRuleSet->interfaceDeprecations());
+
+        return new RuleSet($notUsedClasses, $notUsedInterfaces, $notUsedMethods, $notUsedFunctions);
     }
 }
